@@ -1,6 +1,7 @@
 package com.community.core.customer;
 
 
+import org.broadleafcommerce.common.presentation.AdminPresentation;
 import org.broadleafcommerce.profile.core.domain.CustomerImpl;
 
 import javax.persistence.Column;
@@ -17,9 +18,11 @@ public class HCCustomerImpl extends CustomerImpl implements HCCustomer {
     private static final long serialVersionUID = 6545097668293683751L;
 
     @Column(name = "NUM_SAUCES_BOUGHT")
+    @AdminPresentation(friendlyName = "Sauces Bought", prominent = true)
     protected Integer numSaucesBought = 0;
 
     @Column(name = "TOTAL_HEAT_RATING")
+    @AdminPresentation(friendlyName = "Heating Rate", prominent = true)
     protected Integer totalHeatRating = 0;
 
     @Override

@@ -2,6 +2,7 @@ package com.community.configuration;
 
 import com.community.core.config.CoreConfig;
 import com.community.core.config.StringFactoryBean;
+import com.community.workflow.checkout.RecordHeatRangeActivity;
 import org.apache.catalina.connector.Connector;
 import org.broadleafcommerce.common.extensibility.context.merge.Merge;
 import org.broadleafcommerce.core.search.service.solr.index.SolrIndexService;
@@ -44,6 +45,11 @@ public class SiteConfig {
     @Merge("blMessageSourceBaseNames")
     public List<String> customMessages() {
         return Arrays.asList("classpath:messages");
+    }
+
+    @Merge("blCheckoutWorkflowActivities")
+    public List<?> customCheckoutActivities(RecordHeatRangeActivity recordHeatRangeActivity) {
+        return Arrays.asList(recordHeatRangeActivity);
     }
 
     /**
