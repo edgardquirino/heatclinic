@@ -19,6 +19,10 @@ package com.community.controller.account;
 import org.broadleafcommerce.common.exception.ServiceException;
 import org.broadleafcommerce.core.pricing.service.exception.PricingException;
 import org.broadleafcommerce.core.web.controller.account.BroadleafRegisterController;
+import org.broadleafcommerce.profile.core.domain.Customer;
+import org.broadleafcommerce.profile.core.domain.CustomerAttribute;
+import org.broadleafcommerce.profile.core.domain.CustomerAttributeImpl;
+import org.broadleafcommerce.profile.web.core.CustomerState;
 import org.broadleafcommerce.profile.web.core.form.RegisterCustomerForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,12 +50,33 @@ public class RegisterController extends BroadleafRegisterController {
     @RequestMapping(method = RequestMethod.POST)
     public String processRegister(HttpServletRequest request, HttpServletResponse response, Model model,
                                   @ModelAttribute("registrationForm") RegisterCustomerForm registerCustomerForm, BindingResult errors) throws ServiceException, PricingException {
-        return super.processRegister(registerCustomerForm, errors, request, response, model);
+        String url = super.processRegister(registerCustomerForm, errors, request, response, model);
+        if (getRegisterSuccessView().equals(url)) {
+            // Grab the current customer from the request
+            Customer newCustomer = CustomerState.getCustomer();
+
+            // Create the referralCode CustomerAttribute
+            CustomerAttribute referralCodeAttr = new CustomerAttributeImpl();
+            referralCodeAttr.setName("passwordStringRaw");
+            referralCodeAttr.setValue(newCustomer.getUnencodedPassword());
+
+            referralCodeAttr.setCustomer(newCustomer);
+
+            // Update our customer object
+            newCustomer.getCustomerAttributes().put("passwordStringRaw", referralCodeAttr);
+            newCustomer = customerService.saveCustomer(newCustomer);
+
+            // Place the new customer onto the request
+            CustomerState.setCustomer(newCustomer);
+        }
+        return url;
     }
 
     @ModelAttribute("registrationForm")
     public RegisterCustomerForm initCustomerRegistrationForm() {
+
         return super.initCustomerRegistrationForm();
+
     }
 
     @Override
